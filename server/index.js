@@ -45,7 +45,6 @@ function verifyToken(req, res, next) {
   }
 }
 
-
 function verifyUserToken(req, res, next) {
   // get token from client side
   const header = req.get("Authorization");
@@ -96,16 +95,12 @@ app.post("/admin/login", async (req, res) => {
           "secret1234"
         );
 
-        res
-          .status(200)
-          .send({ msg: "login success!!", tokenkey: token });
+        res.status(200).send({ msg: "login success!!", tokenkey: token });
       } else {
         res.status(405).send({ msg: "invalid password" });
       }
     } else {
-      res
-        .status(405)
-        .send({ msg: "invalid email or password" });
+      res.status(405).send({ msg: "invalid email or password" });
     }
   } catch (error) {
     console.log(error);
@@ -115,10 +110,12 @@ app.post("/admin/login", async (req, res) => {
 //~~~~~~~~~~~~~~~~~~ User Api ~~~~~~~~~~~~~~~~//
 
 app.post("/user/register", async (req, res) => {
-  const { name, email, phone,  password, cpassword } = req.body;
-  if (!name || !email || !phone || !password || !cpassword) {
-    return res.status(422).json({ error: "please field form" });
-  }
+  console.log(req.body);
+  const { name, email, phone, password, cpassword } = req.body;
+  // if (!name || !email || !phone || !password || !cpassword) {
+  //   console.log(" error from client ");
+  //   return res.status(422).json({ error: "please field form" });
+  // }
   try {
     const userExist = await User.findOne({ email: email });
     if (userExist) {
@@ -126,7 +123,6 @@ app.post("/user/register", async (req, res) => {
     } else if (password != cpassword) {
       return res.status(422).json({ error: "passward are not matching" });
     } else {
-      
       const user = new User({ name, email, phone, password, cpassword });
       await user.save();
       res.status(201).json({ message: "User registration successfully" });
@@ -153,15 +149,14 @@ app.post("/user/signin", async (req, res) => {
       const isMatch = await bcrypt.compare(password, userLogin.password);
 
       if (!isMatch) {
-        res.status(400).send({ 
-          error: "Invalid Credientials"
-         
+        res.status(400).send({
+          error: "Invalid Credientials",
         });
       } else {
-
+        //
         const usertoken = jwt.sign(
           {
-            useremail : User.email,
+            useremail: User.email,
           },
           "secret1234"
         );

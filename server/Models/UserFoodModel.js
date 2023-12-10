@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const foodSchema = new Schema({
-  id: Number,
+ id: Number,
   name: String,
   serving: Number,
   protein: Number,
