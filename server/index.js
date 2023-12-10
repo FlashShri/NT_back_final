@@ -109,6 +109,20 @@ app.post("/admin/login", async (req, res) => {
 });
 //~~~~~~~~~~~~~~~~~~ User Api ~~~~~~~~~~~~~~~~//
 
+app.get("admin/user/:name", (req, res) => {
+  try {
+    const user = User.findOne({ name: req.params.name });
+    if (user == null) {
+      console.log("user not exists");
+      res.status(400).send({ msg: "not found" });
+    } else {
+      res.send( user );
+    }
+  } catch (error) {
+    res.status(404).send({ msg: "not found" });
+  }
+});
+
 app.post("/user/register", async (req, res) => {
   console.log(req.body);
   const { name, email, phone, password, cpassword } = req.body;
@@ -173,7 +187,7 @@ app.post("/user/signin", async (req, res) => {
 //~~~~~~~~~~~~~~~~~~ User Food Api ~~~~~~~~~~~~~~~~//
 app.get("/user/food_data", async (req, res) => {
   try {
-    const foods = await userfood.find();
+    const foods = await userfood.find(); //
     res.send({ foods: foods });
     res.send("you get the data");
   } catch (error) {
@@ -181,6 +195,7 @@ app.get("/user/food_data", async (req, res) => {
   }
 });
 
+//
 app.post("/user/food_data", async (req, res) => {
   //  const { name, serving , protein , calories, sugar, category } = req.body;
   //  if (!name || !serving || !protein || !calories || !sugar || !category) {
@@ -190,7 +205,8 @@ app.post("/user/food_data", async (req, res) => {
   try {
     const reqData = req.body;
     console.log(reqData);
-    const u_food = new userfood(reqData);
+
+    const u_food = new userfood(reqData); // model
     await u_food.save();
     res.send({ msg: u_food });
   } catch (error) {
@@ -206,6 +222,37 @@ app.delete("/user/food_data/:name", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.send({ msg: "error occured in delete" });
+  }
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADMIN API ~~~~~~~~~~~~~~~~~~~~~~~~//
+
+app.get("/admin/user", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.send({ users: users });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.delete("/admin/user/:name", async (req, res) => {
+  try {
+    await User.deleteOne({ name: req.params.name });
+    res.send({ msg: "user deleted " });
+  } catch (error) {
+    console.log(error);
+    res.status(404).send({ msg: "error user not found " });
+  }
+});
+
+app.put("/admin/user/:name", async (req, res) => {
+  try {
+    await User.updateOne({ name: req.params.name }, req.body);
+    res.status(202).send({ msg: "updated success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "updated failed" });
   }
 });
 
